@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Botões Verticais e Jogos</title>
     <style>
-        body, html {
+        body,
+        html {
             margin: 0;
             padding: 0;
             height: 100%;
@@ -15,12 +17,15 @@
             background: black;
             font-family: Arial, sans-serif;
         }
+
         .button-container {
-            display: flex;
+            display: inline-block;
             flex-direction: column;
             align-items: center;
             width: 100%;
+            /* Define a largura do container como 100% */
         }
+
         .button-container button {
             font-size: 16px;
             padding: 10px;
@@ -30,9 +35,14 @@
             border: none;
             border-radius: 5px;
             color: white;
-            width: 80%;
-            max-width: 300px;
+            width: 100%;
+            height: 60px;
+            /* Define a largura dos botões como 100% */
+            /* max-width: 300px;  // Remova esta linha */
+            box-sizing: border-box;
+            /* Inclui padding e border na largura */
         }
+
         .modal {
             display: none;
             position: fixed;
@@ -44,6 +54,7 @@
             justify-content: center;
             align-items: center;
         }
+
         .modal-content {
             background: white;
             padding: 20px;
@@ -53,6 +64,7 @@
             width: 90%;
             max-width: 500px;
         }
+
         .close-button {
             position: absolute;
             top: 10px;
@@ -63,6 +75,7 @@
             background: transparent;
             border: none;
         }
+
         .card {
             width: 60px;
             height: 60px;
@@ -75,6 +88,7 @@
             cursor: pointer;
             border-radius: 5px;
         }
+
         canvas {
             background: #000;
             width: 100%;
@@ -82,12 +96,13 @@
         }
     </style>
 </head>
+
 <body>
     <div class="button-container">
-        <button id="playButton">Clique para Reproduzir o Vídeo</button>
         <button id="button1">Jogo da Memória</button>
         <button id="button2">Jogo de Soma</button>
         <button id="button3">Jogo de Reflexo</button>
+        <button id="playButton">Jogo do Rocket</button>
         <button id="button4">Pong</button>
         <button id="button5">Jogo de Labirinto</button>
     </div>
@@ -96,7 +111,7 @@
         <div class="modal-content">
             <button class="close-button" id="closeVideoButton">×</button>
             <video id="video" controls style="width: 100%;">
-                <source src="caminho/para/seu/video.mp4" type="video/mp4">
+                <source src="meme.mp4" type="video/mp4">
                 Seu navegador não suporta o elemento de vídeo.
             </video>
         </div>
@@ -445,4 +460,5 @@
         }
     </script>
 </body>
+
 </html>
