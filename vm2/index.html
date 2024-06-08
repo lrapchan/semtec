@@ -37,6 +37,11 @@
             /* Define a largura do container como 100% */
         }
 
+        .button-container img { /* Estilos para a logo */
+            width: 200px; /* Ajuste a largura da logo */
+            margin-bottom: 20px; /* Ajuste a margem inferior */
+        }
+
         .button-container button {
             font-size: 16px;
             padding: 10px;
@@ -102,11 +107,16 @@
             width: 100%;
             height: auto;
         }
+
+        .img-logo{
+            text-align: center;
+        }
     </style>
 </head>
 
 <body>
     <div class="button-container">
+        <div class="img-logo"><img src="logo.png" alt="Logo do site"></div>  <!-- Adiciona a logo -->
         <button id="button1">Jogo da Memória</button>
         <button id="button2">Jogo de Soma</button>
         <button id="button3">Jogo de Reflexo</button>
