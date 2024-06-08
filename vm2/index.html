@@ -14,8 +14,19 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background: black;
+            /* background: black; */
             font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-image: url("bg.png");
+            /* Substitua pelo caminho da sua imagem */
+            background-size: cover;
+            /* Ajusta a imagem para cobrir toda a tela */
+            background-repeat: no-repeat;
+            /* Impede que a imagem se repita */
+            background-position: center;
+            /* Centraliza a imagem na tela */
         }
 
         .button-container {
@@ -31,16 +42,13 @@
             padding: 10px;
             margin: 5px;
             cursor: pointer;
-            background: #444;
+            background: #060053;
             border: none;
             border-radius: 5px;
             color: white;
             width: 100%;
             height: 60px;
-            /* Define a largura dos botões como 100% */
-            /* max-width: 300px;  // Remova esta linha */
             box-sizing: border-box;
-            /* Inclui padding e border na largura */
         }
 
         .modal {
@@ -232,8 +240,8 @@
                 <button onclick="checkSum()">Responder</button>
                 <p id="sumResult"></p>
             `;
-            const num1 = Math.floor(Math.random() * 10) + 1;
-            const num2 = Math.floor(Math.random() * 10) + 1;
+            const num1 = Math.floor(Math.random() * 1000) + 1;
+            const num2 = Math.floor(Math.random() * 1000) + 1;
             document.getElementById('sumQuestion').textContent = `Quanto é ${num1} + ${num2}?`;
             document.getElementById('sumInput').dataset.answer = num1 + num2;
         }
@@ -457,6 +465,8 @@
             }
 
             draw();
+
+
         }
     </script>
 </body>
