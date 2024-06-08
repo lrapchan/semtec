@@ -94,7 +94,7 @@
 
     <div class="modal" id="videoModal">
         <div class="modal-content">
-            <button class="close-button" id="closeVideoButton">&times;</button>
+            <button class="close-button" id="closeVideoButton">×</button>
             <video id="video" controls style="width: 100%;">
                 <source src="caminho/para/seu/video.mp4" type="video/mp4">
                 Seu navegador não suporta o elemento de vídeo.
@@ -104,7 +104,7 @@
 
     <div class="modal" id="gameModal">
         <div class="modal-content">
-            <button class="close-button" id="closeGameButton">&times;</button>
+            <button class="close-button" id="closeGameButton">×</button>
             <div id="gameContent"></div>
         </div>
     </div>
@@ -269,6 +269,8 @@
             let ballY = canvas.height / 2;
             let ballSpeedX = 2;
             let ballSpeedY = 2;
+            let playerScore = 0;
+            let opponentScore = 0;
 
             function drawPaddle(x, y) {
                 ctx.beginPath();
@@ -286,11 +288,19 @@
                 ctx.closePath();
             }
 
+            function drawScore() {
+                ctx.font = "20px Arial";
+                ctx.fillStyle = "#fff";
+                ctx.fillText("Player: " + playerScore, 50, 30);
+                ctx.fillText("Opponent: " + opponentScore, canvas.width - 150, 30);
+            }
+
             function draw() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 drawPaddle(0, paddle1Y);
                 drawPaddle(canvas.width - paddleWidth, paddle2Y);
                 drawBall();
+                drawScore();
 
                 if (ballY + ballSpeedY > canvas.height - ballRadius || ballY + ballSpeedY < ballRadius) {
                     ballSpeedY = -ballSpeedY;
@@ -300,12 +310,14 @@
                     if (ballY > paddle1Y && ballY < paddle1Y + paddleHeight) {
                         ballSpeedX = -ballSpeedX;
                     } else {
+                        opponentScore++;
                         resetBall();
                     }
                 } else if (ballX + ballSpeedX > canvas.width - ballRadius) {
                     if (ballY > paddle2Y && ballY < paddle2Y + paddleHeight) {
                         ballSpeedX = -ballSpeedX;
                     } else {
+                        playerScore++;
                         resetBall();
                     }
                 }
@@ -313,7 +325,8 @@
                 ballX += ballSpeedX;
                 ballY += ballSpeedY;
 
-                paddle1Y += (ballY - (paddle1Y + paddleHeight / 2)) * 0.1;
+                // IA simples para o oponente
+                paddle2Y += (ballY - (paddle2Y + paddleHeight / 2)) * 0.1;
 
                 requestAnimationFrame(draw);
             }
@@ -321,23 +334,18 @@
             function resetBall() {
                 ballX = canvas.width / 2;
                 ballY = canvas.height / 2;
-                ballSpeedX = -ballSpeedX;
+                ballSpeedX = Math.random() < 0.5 ? 2 : -2;
                 ballSpeedY = 2;
-            }
-
-            function movePaddle2(touchY) {
-                const touchPosY = touchY - canvas.getBoundingClientRect().top;
-                if (touchPosY < paddle2Y) {
-                    paddle2Y -= 7;
-                } else if (touchPosY > paddle2Y + paddleHeight) {
-                    paddle2Y += 7;
-                }
             }
 
             canvas.addEventListener('touchmove', (e) => {
                 e.preventDefault();
                 const touchY = e.touches[0].clientY;
-                movePaddle2(touchY);
+                const touchPosY = touchY - canvas.getBoundingClientRect().top;
+                paddle1Y = touchPosY - paddleHeight / 2;
+                // Certifique-se de que a raquete não saia dos limites
+                paddle1Y = Math.max(0, paddle1Y);
+                paddle1Y = Math.min(canvas.height - paddleHeight, paddle1Y);
             });
 
             draw();
@@ -365,6 +373,9 @@
 
             const cellSize = canvas.width / maze[0].length;
             const player = { x: 1, y: 1 };
+            let finishX = maze[0].length - 2;
+            let finishY = maze.length - 2;
+            let isMoving = false;
 
             function drawMaze() {
                 for (let y = 0; y < maze.length; y++) {
@@ -384,11 +395,16 @@
                 ctx.fillRect(player.x * cellSize, player.y * cellSize, cellSize, cellSize);
             }
 
+            function drawFinish() {
+                ctx.fillStyle = 'green';
+                ctx.fillRect(finishX * cellSize, finishY * cellSize, cellSize, cellSize);
+            }
+
             function movePlayer(dx, dy) {
                 if (maze[player.y + dy][player.x + dx] !== 1) {
                     player.x += dx;
                     player.y += dy;
-                    if (player.x === maze[0].length - 2 && player.y === maze.length - 2) {
+                    if (player.x === finishX && player.y === finishY) {
                         document.getElementById('mazeResult').textContent = 'Você venceu!';
                     }
                 }
@@ -397,25 +413,32 @@
 
             canvas.addEventListener('touchstart', (e) => {
                 e.preventDefault();
+                isMoving = true;
+            });
+
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                if (!isMoving) return;
                 const touch = e.touches[0];
                 const rect = canvas.getBoundingClientRect();
                 const x = touch.clientX - rect.left;
                 const y = touch.clientY - rect.top;
-                const dx = x - player.x * cellSize;
-                const dy = y - player.y * cellSize;
+                const dx = Math.round((x - player.x * cellSize) / cellSize);
+                const dy = Math.round((y - player.y * cellSize) / cellSize);
 
-                if (Math.abs(dx) > Math.abs(dy)) {
-                    if (dx > 0) movePlayer(1, 0);
-                    else movePlayer(-1, 0);
-                } else {
-                    if (dy > 0) movePlayer(0, 1);
-                    else movePlayer(0, -1);
-                }
+                movePlayer(dx, dy);
+            });
+
+            canvas.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                isMoving = false;
             });
 
             function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
                 drawMaze();
                 drawPlayer();
+                drawFinish();
             }
 
             draw();
