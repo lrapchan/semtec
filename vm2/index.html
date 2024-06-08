@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conheça a Nuvem</title>
+    <title>Botões Verticais e Jogos</title>
     <style>
         body, html {
             margin: 0;
@@ -15,16 +15,25 @@
             background: black;
             font-family: Arial, sans-serif;
         }
-        #playButton {
-            font-size: 20px;
-            padding: 10px 20px;
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .button-container button {
+            font-size: 16px;
+            padding: 10px;
+            margin: 5px;
             cursor: pointer;
             background: #444;
             border: none;
             border-radius: 5px;
             color: white;
+            width: 80%;
+            max-width: 300px;
         }
-        .video-modal {
+        .modal {
             display: none;
             position: fixed;
             top: 0;
@@ -35,15 +44,14 @@
             justify-content: center;
             align-items: center;
         }
-        .video-container {
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
             position: relative;
-            width: 100%;
-            height: 100%;
-        }
-        .video-container video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            width: 90%;
+            max-width: 500px;
         }
         .close-button {
             position: absolute;
@@ -51,22 +59,53 @@
             right: 10px;
             font-size: 30px;
             cursor: pointer;
-            color: white;
+            color: black;
             background: transparent;
             border: none;
+        }
+        .card {
+            width: 60px;
+            height: 60px;
+            display: inline-block;
+            margin: 10px;
+            background: #444;
+            color: white;
+            line-height: 60px;
+            font-size: 30px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        canvas {
+            background: #000;
+            width: 100%;
+            height: auto;
         }
     </style>
 </head>
 <body>
-    <button id="playButton">Clique aqui para conhecer a Nuvem!</button>
+    <div class="button-container">
+        <button id="playButton">Clique para Reproduzir o Vídeo</button>
+        <button id="button1">Jogo da Memória</button>
+        <button id="button2">Jogo de Soma</button>
+        <button id="button3">Jogo de Reflexo</button>
+        <button id="button4">Pong</button>
+        <button id="button5">Jogo de Labirinto</button>
+    </div>
 
-    <div class="video-modal" id="videoModal">
-        <div class="video-container">
-            <button class="close-button" id="closeButton">&times;</button>
-            <video id="video" controls>
-                <source src="meme.mp4" type="video/mp4">
+    <div class="modal" id="videoModal">
+        <div class="modal-content">
+            <button class="close-button" id="closeVideoButton">&times;</button>
+            <video id="video" controls style="width: 100%;">
+                <source src="caminho/para/seu/video.mp4" type="video/mp4">
                 Seu navegador não suporta o elemento de vídeo.
             </video>
+        </div>
+    </div>
+
+    <div class="modal" id="gameModal">
+        <div class="modal-content">
+            <button class="close-button" id="closeGameButton">&times;</button>
+            <div id="gameContent"></div>
         </div>
     </div>
 
@@ -74,24 +113,313 @@
         const playButton = document.getElementById('playButton');
         const videoModal = document.getElementById('videoModal');
         const video = document.getElementById('video');
+        const closeVideoButton = document.getElementById('closeVideoButton');
+
+        const buttons = {
+            button1: 'Jogo da Memória',
+            button2: 'Jogo de Soma',
+            button3: 'Jogo de Reflexo',
+            button4: 'Pong',
+            button5: 'Jogo de Labirinto'
+        };
+
+        const gameModal = document.getElementById('gameModal');
+        const closeGameButton = document.getElementById('closeGameButton');
+        const gameContent = document.getElementById('gameContent');
 
         playButton.addEventListener('click', () => {
             videoModal.style.display = 'flex';
             video.play();
         });
 
-        closeButton.addEventListener('click', () => {
+        closeVideoButton.addEventListener('click', () => {
             video.pause();
             videoModal.style.display = 'none';
         });
 
-        // Optional: Close the modal when clicking outside the video container
         videoModal.addEventListener('click', (e) => {
             if (e.target === videoModal) {
                 video.pause();
                 videoModal.style.display = 'none';
             }
         });
+
+        closeGameButton.addEventListener('click', () => {
+            gameModal.style.display = 'none';
+            gameContent.innerHTML = '';
+        });
+
+        gameModal.addEventListener('click', (e) => {
+            if (e.target === gameModal) {
+                gameModal.style.display = 'none';
+                gameContent.innerHTML = '';
+            }
+        });
+
+        for (let button in buttons) {
+            document.getElementById(button).addEventListener('click', () => {
+                const game = buttons[button];
+                gameContent.innerHTML = `<h2>${game}</h2>`;
+                gameModal.style.display = 'flex';
+                if (game === 'Jogo da Memória') initMemoryGame();
+                if (game === 'Jogo de Soma') initSumGame();
+                if (game === 'Jogo de Reflexo') initReflexGame();
+                if (game === 'Pong') initPongGame();
+                if (game === 'Jogo de Labirinto') initMazeGame();
+            });
+        }
+
+        function initMemoryGame() {
+            gameContent.innerHTML += `
+                <div id="memoryGame" style="display: flex; flex-wrap: wrap; justify-content: center;"></div>
+                <p id="memoryResult"></p>
+            `;
+            const cards = [1, 2, 3, 4, 1, 2, 3, 4];
+            cards.sort(() => 0.5 - Math.random());
+
+            const memoryGame = document.getElementById('memoryGame');
+            let selectedCards = [];
+            let matchedCards = 0;
+
+            cards.forEach((num, index) => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.dataset.number = num;
+                card.dataset.index = index;
+                card.addEventListener('click', () => {
+                    if (selectedCards.length < 2 && !card.classList.contains('matched')) {
+                        card.textContent = num;
+                        selectedCards.push(card);
+                        if (selectedCards.length === 2) {
+                            setTimeout(() => {
+                                if (selectedCards[0].dataset.number === selectedCards[1].dataset.number) {
+                                    selectedCards.forEach(c => c.classList.add('matched'));
+                                    matchedCards += 2;
+                                    if (matchedCards === cards.length) {
+                                        document.getElementById('memoryResult').textContent = 'Você venceu!';
+                                    }
+                                } else {
+                                    selectedCards.forEach(c => c.textContent = '');
+                                }
+                                selectedCards = [];
+                            }, 500);
+                        }
+                    }
+                });
+                memoryGame.appendChild(card);
+            });
+        }
+
+        function initSumGame() {
+            gameContent.innerHTML += `
+                <p id="sumQuestion"></p>
+                <input type="number" id="sumInput">
+                <button onclick="checkSum()">Responder</button>
+                <p id="sumResult"></p>
+            `;
+            const num1 = Math.floor(Math.random() * 10) + 1;
+            const num2 = Math.floor(Math.random() * 10) + 1;
+            document.getElementById('sumQuestion').textContent = `Quanto é ${num1} + ${num2}?`;
+            document.getElementById('sumInput').dataset.answer = num1 + num2;
+        }
+
+        function checkSum() {
+            const answer = document.getElementById('sumInput').dataset.answer;
+            const guess = document.getElementById('sumInput').value;
+            const result = guess == answer ? 'Correto!' : 'Errado!';
+            document.getElementById('sumResult').textContent = result;
+        }
+
+        function initReflexGame() {
+            gameContent.innerHTML += `
+                <button id="reflexButton" style="font-size: 20px; padding: 20px 40px; background: green; color: white; border: none; border-radius: 5px;">Clique quando ficar vermelho</button>
+                <p id="reflexResult"></p>
+            `;
+            const reflexButton = document.getElementById('reflexButton');
+            const waitTime = Math.floor(Math.random() * 3000) + 2000;
+
+            reflexButton.disabled = true;
+            setTimeout(() => {
+                reflexButton.style.backgroundColor = 'red';
+                reflexButton.disabled = false;
+                reflexButton.dataset.startTime = Date.now();
+            }, waitTime);
+
+            reflexButton.addEventListener('click', () => {
+                if (reflexButton.style.backgroundColor === 'red') {
+                    const reactionTime = Date.now() - reflexButton.dataset.startTime;
+                    document.getElementById('reflexResult').textContent = `Seu tempo de reação foi ${reactionTime} ms`;
+                }
+            });
+        }
+
+        function initPongGame() {
+            gameContent.innerHTML += `
+                <canvas id="pongCanvas" width="400" height="300"></canvas>
+            `;
+            const canvas = document.getElementById('pongCanvas');
+            const ctx = canvas.getContext('2d');
+
+            const paddleHeight = 75;
+            const paddleWidth = 10;
+            const ballRadius = 10;
+            let paddle1Y = (canvas.height - paddleHeight) / 2;
+            let paddle2Y = (canvas.height - paddleHeight) / 2;
+            let ballX = canvas.width / 2;
+            let ballY = canvas.height / 2;
+            let ballSpeedX = 2;
+            let ballSpeedY = 2;
+
+            function drawPaddle(x, y) {
+                ctx.beginPath();
+                ctx.rect(x, y, paddleWidth, paddleHeight);
+                ctx.fillStyle = "#fff";
+                ctx.fill();
+                ctx.closePath();
+            }
+
+            function drawBall() {
+                ctx.beginPath();
+                ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
+                ctx.fillStyle = "#fff";
+                ctx.fill();
+                ctx.closePath();
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                drawPaddle(0, paddle1Y);
+                drawPaddle(canvas.width - paddleWidth, paddle2Y);
+                drawBall();
+
+                if (ballY + ballSpeedY > canvas.height - ballRadius || ballY + ballSpeedY < ballRadius) {
+                    ballSpeedY = -ballSpeedY;
+                }
+
+                if (ballX + ballSpeedX < ballRadius) {
+                    if (ballY > paddle1Y && ballY < paddle1Y + paddleHeight) {
+                        ballSpeedX = -ballSpeedX;
+                    } else {
+                        resetBall();
+                    }
+                } else if (ballX + ballSpeedX > canvas.width - ballRadius) {
+                    if (ballY > paddle2Y && ballY < paddle2Y + paddleHeight) {
+                        ballSpeedX = -ballSpeedX;
+                    } else {
+                        resetBall();
+                    }
+                }
+
+                ballX += ballSpeedX;
+                ballY += ballSpeedY;
+
+                paddle1Y += (ballY - (paddle1Y + paddleHeight / 2)) * 0.1;
+
+                requestAnimationFrame(draw);
+            }
+
+            function resetBall() {
+                ballX = canvas.width / 2;
+                ballY = canvas.height / 2;
+                ballSpeedX = -ballSpeedX;
+                ballSpeedY = 2;
+            }
+
+            function movePaddle2(touchY) {
+                const touchPosY = touchY - canvas.getBoundingClientRect().top;
+                if (touchPosY < paddle2Y) {
+                    paddle2Y -= 7;
+                } else if (touchPosY > paddle2Y + paddleHeight) {
+                    paddle2Y += 7;
+                }
+            }
+
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const touchY = e.touches[0].clientY;
+                movePaddle2(touchY);
+            });
+
+            draw();
+        }
+
+        function initMazeGame() {
+            gameContent.innerHTML += `
+                <canvas id="mazeCanvas" width="400" height="400"></canvas>
+                <p id="mazeResult"></p>
+            `;
+            const canvas = document.getElementById('mazeCanvas');
+            const ctx = canvas.getContext('2d');
+
+            const maze = [
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+                [1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
+                [1, 0, 1, 0, 0, 0, 0, 1, 0, 1],
+                [1, 0, 1, 1, 1, 1, 0, 1, 0, 1],
+                [1, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+                [1, 1, 1, 1, 1, 1, 0, 1, 0, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+            ];
+
+            const cellSize = canvas.width / maze[0].length;
+            const player = { x: 1, y: 1 };
+
+            function drawMaze() {
+                for (let y = 0; y < maze.length; y++) {
+                    for (let x = 0; x < maze[y].length; x++) {
+                        if (maze[y][x] === 1) {
+                            ctx.fillStyle = '#000';
+                        } else {
+                            ctx.fillStyle = '#fff';
+                        }
+                        ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                    }
+                }
+            }
+
+            function drawPlayer() {
+                ctx.fillStyle = 'blue';
+                ctx.fillRect(player.x * cellSize, player.y * cellSize, cellSize, cellSize);
+            }
+
+            function movePlayer(dx, dy) {
+                if (maze[player.y + dy][player.x + dx] !== 1) {
+                    player.x += dx;
+                    player.y += dy;
+                    if (player.x === maze[0].length - 2 && player.y === maze.length - 2) {
+                        document.getElementById('mazeResult').textContent = 'Você venceu!';
+                    }
+                }
+                draw();
+            }
+
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const rect = canvas.getBoundingClientRect();
+                const x = touch.clientX - rect.left;
+                const y = touch.clientY - rect.top;
+                const dx = x - player.x * cellSize;
+                const dy = y - player.y * cellSize;
+
+                if (Math.abs(dx) > Math.abs(dy)) {
+                    if (dx > 0) movePlayer(1, 0);
+                    else movePlayer(-1, 0);
+                } else {
+                    if (dy > 0) movePlayer(0, 1);
+                    else movePlayer(0, -1);
+                }
+            });
+
+            function draw() {
+                drawMaze();
+                drawPlayer();
+            }
+
+            draw();
+        }
     </script>
 </body>
 </html>
