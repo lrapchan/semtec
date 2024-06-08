@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vídeo em Tela Cheia</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: black;
+            font-family: Arial, sans-serif;
+        }
+        #playButton {
+            font-size: 20px;
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #444;
+            border: none;
+            border-radius: 5px;
+            color: white;
+        }
+        .video-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 30px;
+            cursor: pointer;
+            color: white;
+            background: transparent;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <button id="playButton">Clique aqui para conhecer a Nuvem!</button>
+
+    <div class="video-modal" id="videoModal">
+        <div class="video-container">
+            <button class="close-button" id="closeButton">&times;</button>
+            <video id="video" controls>
+                <source src="meme.mp4" type="video/mp4">
+                Seu navegador não suporta o elemento de vídeo.
+            </video>
+        </div>
+    </div>
+
+    <script>
+        const playButton = document.getElementById('playButton');
+        const videoModal = document.getElementById('videoModal');
+        const video = document.getElementById('video');
+
+        playButton.addEventListener('click', () => {
+            videoModal.style.display = 'flex';
+            video.play();
+        });
+
+        closeButton.addEventListener('click', () => {
+            video.pause();
+            videoModal.style.display = 'none';
+        });
+
+        // Optional: Close the modal when clicking outside the video container
+        videoModal.addEventListener('click', (e) => {
+            if (e.target === videoModal) {
+                video.pause();
+                videoModal.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
