@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code no Centro</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        #qrcode {
+            width: 256px;
+            height: 256px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+    <div id="qrcode"></div>
+
+    <script>
+        // Configuração do conteúdo do QR Code
+        var qrContent = "http://40.71.1.169/";
+        
+        // Gerar QR Code
+        var qrcode = new QRCode(document.getElementById("qrcode"), {
+            text: qrContent,
+            width: 256,
+            height: 256
+        });
+    </script>
+</body>
+</html>
